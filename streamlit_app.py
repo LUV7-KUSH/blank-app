@@ -410,6 +410,83 @@ def laminate_analysis_module():
                   ['εx', 'εy', 'γxy', 'κx', 'κy', 'κxy'],
                   "ABD Inverse Matrix"
                   )
+
+    # Calculate apparent laminate stiffness coefficients
+    h = total_thickness
+    A_star = A / h  # Normalized extensional stiffness matrix
+    B_star = B / (h**2)  # Normalized coupling stiffness matrix
+    D_star = D / (h**3)  # Normalized bending stiffness matrix
+    
+    st.subheader("Normalized Laminate Stiffness Coefficients")
+    
+    col_norm1, col_norm2, col_norm3 = st.columns(3)
+    
+    with col_norm1:
+        display_matrix(A_star, 
+                      ['εx', 'εy', 'γxy'], 
+                      ['Nx/h', 'Ny/h', 'Nxy/h'], 
+                      "A* Matrix (Normalized Extensional Stiffness)")
+    
+    with col_norm2:
+        display_matrix(B_star, 
+                      ['εx', 'εy', 'γxy'], 
+                      ['Mx/h²', 'My/h²', 'Mxy/h²'], 
+                      "B* Matrix (Normalized Coupling Stiffness)")
+    
+    with col_norm3:
+        display_matrix(D_star, 
+                      ['κx', 'κy', 'κxy'], 
+                      ['Mx/h³', 'My/h³', 'Mxy/h³'], 
+                      "D* Matrix (Normalized Bending Stiffness)")
+    
+    # Calculate apparent engineering constants
+    st.subheader("Apparent Laminate Engineering Constants")
+    
+    # Extensional stiffness terms
+    Ex_avg = 1/(h * ABD_inv[0,0])
+    Ey_avg = 1/(h * ABD_inv[1,1])
+    Gxy_avg = 1/(h * ABD_inv[2,2])
+    nuxy_avg = -ABD_inv[0,1]/ABD_inv[0,0]
+    nuyx_avg = -ABD_inv[1,0]/ABD_inv[1,1]
+    
+    # Coupling stiffness terms
+    eta_x = ABD_inv[0,3]/ABD_inv[0,0]  # Extension-twist coupling
+    eta_y = ABD_inv[1,3]/ABD_inv[1,1]  # Extension-twist coupling
+    zeta_x = ABD_inv[0,4]/ABD_inv[0,0]  # Extension-bending coupling
+    zeta_y = ABD_inv[1,5]/ABD_inv[1,1]  # Extension-bending coupling
+    
+    # Bending stiffness terms
+    Dx_avg = 1/(h**3 * ABD_inv[3,3])
+    Dy_avg = 1/(h**3 * ABD_inv[4,4])
+    Dxy_avg = 1/(h**3 * ABD_inv[5,5])
+    nuxy_bend = -ABD_inv[3,4]/ABD_inv[3,3]
+    nuyx_bend = -ABD_inv[4,3]/ABD_inv[4,4]
+    
+    # Display results in tables
+    st.markdown("**In-Plane Stiffness Properties**")
+    in_plane_results = pd.DataFrame({
+        "Property": ["Ex_avg", "Ey_avg", "Gxy_avg", "νxy_avg", "νyx_avg"],
+        "Value": [f"{Ex_avg:.2f} GPa", f"{Ey_avg:.2f} GPa", f"{Gxy_avg:.2f} GPa", 
+                 f"{nuxy_avg:.4f}", f"{nuyx_avg:.4f}"]
+    })
+    st.table(in_plane_results)
+    
+    st.markdown("**Coupling Stiffness Properties**")
+    coupling_results = pd.DataFrame({
+        "Property": ["ηx (Extension-Twist)", "ηy (Extension-Twist)", 
+                    "ζx (Extension-Bending)", "ζy (Extension-Bending)"],
+        "Value": [f"{eta_x:.4f} m⁻¹", f"{eta_y:.4f} m⁻¹", 
+                 f"{zeta_x:.4f} m⁻¹", f"{zeta_y:.4f} m⁻¹"]
+    })
+    st.table(coupling_results)
+    
+    st.markdown("**Bending Stiffness Properties**")
+    bending_results = pd.DataFrame({
+        "Property": ["Dx_avg", "Dy_avg", "Dxy_avg", "νxy_bend", "νyx_bend"],
+        "Value": [f"{Dx_avg:.2f} N·m", f"{Dy_avg:.2f} N·m", f"{Dxy_avg:.2f} N·m", 
+                 f"{nuxy_bend:.4f}", f"{nuyx_bend:.4f}"]
+    })
+    st.table(bending_results)
     
     st.subheader("Load Application and Response")
     
