@@ -520,8 +520,7 @@ def laminate_analysis_module():
         st.table(pd.DataFrame(midplane_results))
         
         # Calculate ply stresses and strains
-        st.subheader("Ply-by-Ply Analysis")
-        
+        st.subheader("Ply-by-Ply Analysis (Bottom to Top)")
         ply_results = []
         for i, ply in enumerate(st.session_state.laminate_layers):
             angle = ply['angle']
@@ -541,31 +540,58 @@ def laminate_analysis_module():
                 [-m*n, m*n, m**2-n**2]
             ])
             
-            # Calculate at top, middle, and bottom of ply
-            for z_pos, location in zip([z_bottom, (z_bottom+z_top)/2, z_top], ['Bottom', 'Middle', 'Top']):
-                # Strains in x-y coordinates
+            # Calculate at three points through thickness
+            for z_pos, location in zip(
+                [z_bottom, (z_bottom+z_top)/2, z_top],
+                ['Bottom', 'Middle', 'Top']
+            ):
+                # Global strains (x-y)
                 strain_xy = epsilon0 + z_pos * kappa
                 
-                # Stresses in x-y coordinates
+                # Global stresses (x-y)
                 stress_xy = Qbar.dot(strain_xy)
                 
-                # Stresses in material coordinates
+                # Material coordinates (1-2)
                 stress_12 = T.dot(stress_xy)
+                strain_12 = np.linalg.inv(Q).dot(stress_12)
                 
                 ply_results.append({
                     'Ply': i+1,
-                    'Angle': angle,
+                    'Angle': f"{angle}°",
                     'Location': location,
                     'z (mm)': f"{z_pos:.3f}",
-                    'σx (MPa)': f"{stress_xy[0]:.2f}",
-                    'σy (MPa)': f"{stress_xy[1]:.2f}",
-                    'τxy (MPa)': f"{stress_xy[2]:.2f}",
-                    'σ1 (MPa)': f"{stress_12[0]:.2f}",
-                    'σ2 (MPa)': f"{stress_12[1]:.2f}",
-                    'τ12 (MPa)': f"{stress_12[2]:.2f}"
+                    'εₓ (μɛ)': f"{strain_xy[0]*1e6:.2f}",
+                    'εᵧ (μɛ)': f"{strain_xy[1]*1e6:.2f}",
+                    'γₓᵧ (μrad)': f"{strain_xy[2]*1e6:.2f}",
+                    'ε₁ (μɛ)': f"{strain_12[0]*1e6:.2f}",
+                    'ε₂ (μɛ)': f"{strain_12[1]*1e6:.2f}",
+                    'γ₁₂ (μrad)': f"{strain_12[2]*1e6:.2f}",
+                    'σₓ (MPa)': f"{stress_xy[0]:.2f}",
+                    'σᵧ (MPa)': f"{stress_xy[1]:.2f}",
+                    'τₓᵧ (MPa)': f"{stress_xy[2]:.2f}",
+                    'σ₁ (MPa)': f"{stress_12[0]:.2f}",
+                    'σ₂ (MPa)': f"{stress_12[1]:.2f}",
+                    'τ₁₂ (MPa)': f"{stress_12[2]:.2f}"
                 })
         
-        st.dataframe(pd.DataFrame(ply_results))
+        # Display results in tabs
+        tab1, tab2, tab3 = st.tabs(["All Data", "Strains", "Stresses"])
+        
+        with tab1:
+            st.dataframe(pd.DataFrame(ply_results))
+        
+        with tab2:
+            strain_cols = ['Ply', 'Angle', 'Location', 'z (mm)',
+                         'εₓ (μɛ)', 'εᵧ (μɛ)', 'γₓᵧ (μrad)',
+                         'ε₁ (μɛ)', 'ε₂ (μɛ)', 'γ₁₂ (μrad)']
+            st.dataframe(pd.DataFrame(ply_results)[strain_cols])
+        
+        with tab3:
+            stress_cols = ['Ply', 'Angle', 'Location', 'z (mm)',
+                         'σₓ (MPa)', 'σᵧ (MPa)', 'τₓᵧ (MPa)',
+                         'σ₁ (MPa)', 'σ₂ (MPa)', 'τ₁₂ (MPa)']
+            st.dataframe(pd.DataFrame(ply_results)[stress_cols])
+
 
 # Failure Prediction Module (no changes needed)
 def failure_prediction_module():
