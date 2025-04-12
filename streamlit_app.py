@@ -417,27 +417,27 @@ def laminate_analysis_module():
     B_star = B / (h**2)  # Normalized coupling stiffness matrix
     D_star = D / (h**3)  # Normalized bending stiffness matrix
     
-    st.subheader("Normalized Laminate Stiffness Coefficients")
+    # st.subheader("Normalized Laminate Stiffness Coefficients")
     
-    col_norm1, col_norm2, col_norm3 = st.columns(3)
+    # col_norm1, col_norm2, col_norm3 = st.columns(3)
     
-    with col_norm1:
-        display_matrix(A_star, 
-                      ['εx', 'εy', 'γxy'], 
-                      ['Nx/h', 'Ny/h', 'Nxy/h'], 
-                      "A* Matrix (Normalized Extensional Stiffness)")
+    # with col_norm1:
+    #     display_matrix(A_star, 
+    #                   ['εx', 'εy', 'γxy'], 
+    #                   ['Nx/h', 'Ny/h', 'Nxy/h'], 
+    #                   "A* Matrix (Normalized Extensional Stiffness)")
     
-    with col_norm2:
-        display_matrix(B_star, 
-                      ['εx', 'εy', 'γxy'], 
-                      ['Mx/h²', 'My/h²', 'Mxy/h²'], 
-                      "B* Matrix (Normalized Coupling Stiffness)")
+    # with col_norm2:
+    #     display_matrix(B_star, 
+    #                   ['εx', 'εy', 'γxy'], 
+    #                   ['Mx/h²', 'My/h²', 'Mxy/h²'], 
+    #                   "B* Matrix (Normalized Coupling Stiffness)")
     
-    with col_norm3:
-        display_matrix(D_star, 
-                      ['κx', 'κy', 'κxy'], 
-                      ['Mx/h³', 'My/h³', 'Mxy/h³'], 
-                      "D* Matrix (Normalized Bending Stiffness)")
+    # with col_norm3:
+    #     display_matrix(D_star, 
+    #                   ['κx', 'κy', 'κxy'], 
+    #                   ['Mx/h³', 'My/h³', 'Mxy/h³'], 
+    #                   "D* Matrix (Normalized Bending Stiffness)")
     
     # Calculate apparent engineering constants
     st.subheader("Apparent Laminate Engineering Constants")
@@ -480,13 +480,13 @@ def laminate_analysis_module():
     })
     st.table(coupling_results)
     
-    st.markdown("**Bending Stiffness Properties**")
-    bending_results = pd.DataFrame({
-        "Property": ["Dx_avg", "Dy_avg", "Dxy_avg", "νxy_bend", "νyx_bend"],
-        "Value": [f"{Dx_avg:.2f} N·m", f"{Dy_avg:.2f} N·m", f"{Dxy_avg:.2f} N·m", 
-                 f"{nuxy_bend:.4f}", f"{nuyx_bend:.4f}"]
-    })
-    st.table(bending_results)
+    # st.markdown("**Bending Stiffness Properties**")
+    # bending_results = pd.DataFrame({
+    #     "Property": ["Dx_avg", "Dy_avg", "Dxy_avg", "νxy_bend", "νyx_bend"],
+    #     "Value": [f"{Dx_avg:.2f} N·m", f"{Dy_avg:.2f} N·m", f"{Dxy_avg:.2f} N·m", 
+    #              f"{nuxy_bend:.4f}", f"{nuyx_bend:.4f}"]
+    # })
+    # st.table(bending_results)
     
     st.subheader("Load Application and Response")
     
@@ -712,8 +712,8 @@ def failure_prediction_module():
                     'σ1 (MPa)': f"{sigma1:.2f}",
                     'σ2 (MPa)': f"{sigma2:.2f}",
                     'τ12 (MPa)': f"{tau12:.2f}",
-                    'Max Stress R': f"{max_stress_R:.4f}",
-                    'Failure Mode': max_stress_mode,
+                    # 'Max Stress R': f"{max_stress_R:.4f}",
+                    # 'Failure Mode': max_stress_mode,
                     'Status': failure_status
                 })
 
