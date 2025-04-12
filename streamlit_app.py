@@ -712,8 +712,8 @@ def failure_prediction_module():
                     'σ1 (MPa)': f"{sigma1:.2f}",
                     'σ2 (MPa)': f"{sigma2:.2f}",
                     'τ12 (MPa)': f"{tau12:.2f}",
-                    # 'Max Stress R': f"{max_stress_R:.4f}",
-                    # 'Failure Mode': max_stress_mode,
+                    'Max Stress R': f"{max_stress_R:.4f}",
+                    'Failure Mode': max_stress_mode,
                     'Status': failure_status
                 })
 
